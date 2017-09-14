@@ -219,14 +219,20 @@ object Ch3 {
 
   // ex 3.23
   def zipWith[A,B,C](as: List[A])(bs: List[B])(f:(A,B)=>C): List[C] = {
-    def bifoldR(as: List[A], bs: List[B], acc: List[C])(f:(A, B, List[C]) => List[C]): List[C] = {
-      (as,bs) match {
-        case (Nil,_) => acc
-        case (_,Nil) => acc
-        case (Cons(a, atail), Cons(b, btail)) => f(a, b, bifoldR(atail, btail, acc)(f))
-      }
+//    def bifoldR(as: List[A], bs: List[B], acc: List[C])(f:(A, B, List[C]) => List[C]): List[C] = {
+//      (as,bs) match {
+//        case (Nil,_) => acc
+//        case (_,Nil) => acc
+//        case (Cons(a, atail), Cons(b, btail)) => f(a, b, bifoldR(atail, btail, acc)(f))
+//      }
+//    }
+//    bifoldR(as, bs, Nil:List[C])((a,b,acc) => Cons(f(a,b), acc))
+    // first working pass above
+    (as,bs) match {
+      case (Nil,_) => Nil
+      case (_,Nil) => Nil
+      case (Cons(a, atail), Cons(b, btail)) => Cons(f(a,b), zipWith(atail)(btail)(f))
     }
-    bifoldR(as, bs, Nil:List[C])((a,b,acc) => Cons(f(a,b), acc))
   }
 
   def main(args: Array[String]): Unit = {
