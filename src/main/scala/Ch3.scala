@@ -235,6 +235,28 @@ object Ch3 {
     }
   }
 
+  // ex 3.24
+  @annotation.tailrec
+  def startsWith[A](sup: List[A], sub: List[A]): Boolean = {
+    (sup,sub) match {
+      case (_,Nil) => false
+      case (Nil,_) => false
+      case (Cons(a, atail), Cons(b, Nil)) => a == b
+      case (Cons(a, atail), Cons(b, btail)) =>
+        if (a!=b) false
+        else startsWith(atail, btail)
+    }
+  }
+  @annotation.tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    sup match {
+      case Nil => false
+      case Cons(_, as) =>
+        if (startsWith(sup, sub)) true
+        else hasSubsequence(as, sub)
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     println(foldR(List(1,2,3), Nil:List[Int])(Cons(_,_)))
     println(List(1,2,3))

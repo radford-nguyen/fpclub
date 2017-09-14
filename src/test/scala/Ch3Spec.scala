@@ -90,4 +90,39 @@ class Ch3Spec extends FlatSpec with Matchers {
       List(3,4,5,6,7)
     )
   }
+
+  "startsWith" should "just work" in {
+    Ch3.startsWith(
+      List(1,2,3,4),
+      List(1,2)
+    ) should be(true)
+    Ch3.startsWith(
+      List(1,2,3,4),
+      List(1,2,3,4,5)
+    ) should be(false)
+    Ch3.startsWith(
+      List(1,2,3,4),
+      Nil
+    ) should be(false)
+    Ch3.startsWith(
+      Nil,
+      List(1,2,3,4)
+    ) should be(false)
+  }
+
+  "hasSubsequence" should "just work" in {
+    val sup = List(1,2,3,4)
+    Ch3.hasSubsequence(sup, List(1,2)) should be(true)
+    Ch3.hasSubsequence(sup, List(2,3)) should be(true)
+    Ch3.hasSubsequence(sup, List(3,4)) should be(true)
+    Ch3.hasSubsequence(sup, List(1,2,3)) should be(true)
+    Ch3.hasSubsequence(sup, List(2,3,4)) should be(true)
+    Ch3.hasSubsequence(sup, List(1)) should be(true)
+    Ch3.hasSubsequence(sup, List(2)) should be(true)
+    Ch3.hasSubsequence(sup, List(3)) should be(true)
+    Ch3.hasSubsequence(sup, List(4)) should be(true)
+    Ch3.hasSubsequence(sup, List(1,2,3,4)) should be(true)
+    Ch3.hasSubsequence(sup, List(1,2,3,3)) should be(false)
+    Ch3.hasSubsequence(sup, Nil) should be(false)
+  }
 }
