@@ -24,11 +24,11 @@ class Ch3Spec extends FlatSpec with Matchers {
     Ch3.foldRinL(List(1,4,5), Nil:List[Int])(Cons(_,_)) should be(List(1,4,5))
   }
 
-  "append" should "work" in {
+  "append" should "just work" in {
     Ch3.append(List(3,1), List(5,1,54,2)) should be(List(3,1,5,1,54,2))
   }
 
-  "concat" should "work" in {
+  "concat" should "just work" in {
     Ch3.concat(List(List(1,2), List(3), List(4,5,6), List(7,8,9,10))) should be(List(1,2,3,4,5,6,7,8,9,10))
   }
 
@@ -49,5 +49,45 @@ class Ch3Spec extends FlatSpec with Matchers {
     Ch3.flatFilter(ints)(isEven) should be(List(2,4,6))
   }
 
+  "addLists" should "just work" in {
+    def as = List(1,2,3,4,5)
+    def bs = List(2,2,2,2,2)
+    Ch3.addLists(as, bs) should be(List(3,4,5,6,7))
+  }
 
+  "addLists" should "work for different length Lists" in {
+    Ch3.addLists(
+      List(1,2,3,4,5),
+      List(2,2,2)
+    ) should be(
+      List(3,4,5)
+    )
+    Ch3.addLists(
+      List(1,2,3,4,5),
+      List(2,2,2,2,2,2,2)
+    ) should be(
+      List(3,4,5,6,7)
+    )
+  }
+
+  "addLists" should "work when called using more generic zipWith" in {
+    Ch3.zipWith(
+      List(1,2,3,4,5)
+    )(
+      List(2,2,2)
+    )(
+      (_+_)
+    ) should be(
+      List(3,4,5)
+    )
+    Ch3.zipWith(
+      List(1,2,3,4,5)
+    )(
+      List(2,2,2,2,2,2,2)
+    )(
+      (_+_)
+    ) should be(
+      List(3,4,5,6,7)
+    )
+  }
 }

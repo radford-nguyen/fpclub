@@ -75,9 +75,10 @@ object Ch3 {
     // compare structure of this function to
     // our previous impl of `sum`:
 //    def sum(ints:List[Int]): Int = {
+//      val f = (_+_)
 //      ints match {
 //        case Nil => 0
-//        case Cons(i, is) => i + sum(is)
+//        case Cons(i, is) => f(i, sum(is))
 //      }
 //    }
     as match {
@@ -188,6 +189,29 @@ object Ch3 {
     )
   }
 
+  // ex 3.22
+  def addLists(as: List[Int], bs: List[Int]): List[Int] = {
+    def bifoldR(as: List[Int], bs: List[Int], acc: List[Int])(f:(Int, Int, List[Int]) => List[Int]): List[Int] = {
+      (as,bs) match {
+        case (Nil,_) => acc
+        case (_,Nil) => acc
+        case (Cons(a, atail), Cons(b, btail)) => f(a, b, bifoldR(atail, btail, acc)(f))
+      }
+    }
+    bifoldR(as, bs, Nil:List[Int])((a,b,acc) => Cons(a+b, acc))
+  }
+
+  // ex 3.23
+  def zipWith[A,B,C](as: List[A])(bs: List[B])(f:(A,B)=>C): List[C] = {
+    def bifoldR(as: List[A], bs: List[B], acc: List[C])(f:(A, B, List[C]) => List[C]): List[C] = {
+      (as,bs) match {
+        case (Nil,_) => acc
+        case (_,Nil) => acc
+        case (Cons(a, atail), Cons(b, btail)) => f(a, b, bifoldR(atail, btail, acc)(f))
+      }
+    }
+    bifoldR(as, bs, Nil:List[C])((a,b,acc) => Cons(f(a,b), acc))
+  }
 
   def main(args: Array[String]): Unit = {
     println(foldR(List(1,2,3), Nil:List[Int])(Cons(_,_)))
