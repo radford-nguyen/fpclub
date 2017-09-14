@@ -125,4 +125,71 @@ class Ch3Spec extends FlatSpec with Matchers {
     Ch3.hasSubsequence(sup, List(1,2,3,3)) should be(false)
     Ch3.hasSubsequence(sup, Nil) should be(false)
   }
+
+  "size of Tree" should "just work" in {
+    Ch3.size(Branch(
+      Branch(
+        Leaf(3),
+        Branch(
+          Leaf(5),
+          Leaf(9)
+        )
+      ),
+      Leaf(8)
+    )) should be(7)
+  }
+
+  "maximum" should "just work" in {
+    Ch3.maximum(
+      Branch(
+        Leaf(3),
+        Branch(
+          Leaf(5),
+          Leaf(9)
+        )
+      )
+    ) should be(9)
+  }
+
+  "depth" should "just work" in {
+    Ch3.depth(
+      Branch(
+        Leaf(3),
+        Branch(
+          Leaf(5),
+          Branch(
+            Leaf(1),
+            Leaf(9)
+          )
+        )
+      )
+    ) should be(3)
+  }
+
+  "map(Tree)" should "just work" in {
+    Ch3.map(
+      Branch(
+        Leaf(3),
+        Branch(
+          Leaf(5),
+          Branch(
+            Leaf(1),
+            Leaf(9)
+          )
+        )
+      )
+    )(_+1) should be(
+      Branch(
+        Leaf(3+1),
+        Branch(
+          Leaf(5+1),
+          Branch(
+            Leaf(1+1),
+            Leaf(9+1)
+          )
+        )
+      )
+    )
+  }
+
 }

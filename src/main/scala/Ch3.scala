@@ -23,6 +23,10 @@ object List {
   }
 }
 
+sealed trait Tree[+A]
+case class Leaf[A](value: A) extends Tree[A]
+case class Branch[A](left:Tree[A], right:Tree[A]) extends Tree[A]
+
 object Ch3 {
   def head[A](xs:List[A]): A = {
     xs match {
@@ -254,6 +258,38 @@ object Ch3 {
       case Cons(_, as) =>
         if (startsWith(sup, sub)) true
         else hasSubsequence(as, sub)
+    }
+  }
+
+  // ex 3.25
+  def size[A](tree: Tree[A]): Int = {
+    tree match {
+      case Leaf(_) => 1
+      case Branch(left, right) => 1 + size(left) + size(right)
+    }
+  }
+
+  // ex 3.26
+  def maximum(tree: Tree[Int]): Int = {
+    tree match {
+      case Leaf(a) => a
+      case Branch(left, right) => maximum(left) max maximum(right)
+    }
+  }
+
+  // ex 3.27
+  def depth[A](tree: Tree[A]): Int = {
+    tree match {
+      case Leaf(_) => 0
+      case Branch(left, right) => 1 + (depth(left) max depth(right))
+    }
+  }
+
+  // ex 3.28
+  def map[A,B](tree: Tree[A])(f: A=>B): Tree[B] = {
+    tree match {
+      case Leaf(a) => Leaf(f(a))
+      case Branch(left, right) => Branch(map(left)(f), map(right)(f))
     }
   }
 
