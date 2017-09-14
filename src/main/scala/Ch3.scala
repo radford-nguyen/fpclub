@@ -124,6 +124,22 @@ object Ch3 {
   }
 
   // ex 3.13
+  //
+  // Notes:
+  //
+  // We get a glimpse of how this works (and why the 2
+  // implementations are so similar) by thinking about
+  // function composition.
+  //
+  // Composing functions `f.g.h` in some sense "reverses"
+  // the order of evaluation to h,g,f.  Put another way,
+  // composition turns the evaluation inside-out.
+  //
+  // This is why function composition can be used to turn
+  // a fold inside-out.
+  //
+  // For a better/deeper/more-technical explanation, google
+  // "universal property of folds"
   def foldLinR[A,B](as: List[A], b:B)(f: (B,A) => B): B = {
     def id[T](x:T): T = x
     def stepR(x:A, g: B => B): (B=>B) = {
