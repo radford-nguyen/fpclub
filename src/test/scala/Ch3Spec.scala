@@ -192,4 +192,58 @@ class Ch3Spec extends FlatSpec with Matchers {
     )
   }
 
+  "fold(Tree)" should "be able to implement size(Tree)" in {
+    val tree = Branch(
+      Leaf(3),
+      Branch(
+        Leaf(5),
+        Branch(
+          Leaf(1),
+          Leaf(9)
+        )
+      )
+    )
+
+    Ch3.sizeF(tree) should be (Ch3.size(tree))
+  }
+
+  "fold(Tree)" should "be able to implement maximum(Tree)" in {
+    val tree = Branch(
+      Leaf(3),
+      Branch(
+        Leaf(5),
+        Leaf(9)
+      )
+    )
+    Ch3.maximumF(tree) should be(Ch3.maximum(tree))
+  }
+
+  "fold(Tree)" should "be able to implement depth(Tree)" in {
+    val tree = Branch(
+      Leaf(3),
+      Branch(
+        Leaf(5),
+        Branch(
+          Leaf(1),
+          Leaf(9)
+        )
+      )
+    )
+    Ch3.depthF(tree) should be(Ch3.depth(tree))
+  }
+
+  "fold(Tree)" should "be able to implement map(Tree)" in {
+    val tree = Branch(
+      Leaf(3),
+      Branch(
+        Leaf(5),
+        Branch(
+          Leaf(1),
+          Leaf(9)
+        )
+      )
+    )
+    val f = (_+1): Int=>Int
+    Ch3.mapF(tree)(f) should be(Ch3.mapF(tree)(f))
+  }
 }

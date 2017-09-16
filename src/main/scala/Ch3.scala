@@ -293,6 +293,22 @@ object Ch3 {
     }
   }
 
+  // ex 3.29
+  def fold[A,B](tree: Tree[A])(f: A=>B)(g: (B,B)=>B): B = {
+    tree match {
+      case Leaf(a) => f(a)
+      case Branch(left, right) => {
+        val l = fold(left)(f)(g)
+        val r = fold(right)(f)(g)
+        g(l,r)
+      }
+    }
+  }
+  def sizeF[A](tree: Tree[A]): Int = fold(tree)(_ => 1)((l,r) => 1 + l + r)
+  def maximumF(tree: Tree[Int]): Int = fold(tree)(a=>a)(_ max _)
+  def depthF[A](tree:Tree[A]): Int = fold(tree)(_ => 0)((l,r) => 1 + (l max r))
+  def mapF[A,B](tree: Tree[A])(f: A=>B): Tree[B] = fold(tree)(a => Leaf(f(a)):Tree[B])((l,r) => Branch(l, r))
+
   def main(args: Array[String]): Unit = {
     println(foldR(List(1,2,3), Nil:List[Int])(Cons(_,_)))
     println(List(1,2,3))
