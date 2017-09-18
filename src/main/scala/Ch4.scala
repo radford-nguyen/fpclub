@@ -1,4 +1,4 @@
-package fpclub
+package fpclub4
 
 import scala.{Option => _, Either => _}
 
@@ -52,4 +52,28 @@ object Ch4 {
     })
   }
 
+  // ex 4.4
+  def sequence[A](as: List[Option[A]]): Option[List[A]] = {
+    as.foldRight(Some(Nil): Option[List[A]])((a, acc) => {
+      (a,acc) match {
+        case (None, _) => None
+        case (_, None) => None
+        case (Some(x), Some(xs)) => Some(x::xs)
+      }
+    })
+  }
+
+  // ex 4.5
+  def traverse[A,B](as: List[A])(f: A=>Option[B]): Option[List[B]] = {
+    as.foldRight(Some(Nil):Option[List[B]])((a,acc) => {
+      (f(a),acc) match {
+        case (None,_) => None
+        case (_,None) => None
+        case (Some(b), Some(bs)) => Some(b::bs)
+      }
+    })
+  }
+  def sequenceT[A](as: List[Option[A]]): Option[List[A]] = {
+    traverse(as)(a => a)
+  }
 }

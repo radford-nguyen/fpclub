@@ -1,7 +1,8 @@
-package fpclub
+package fpclub4
 
 import org.scalatest.{FlatSpec, Matchers}
-import scala.{Option => _, Either => _}
+
+import scala.{Either => _, Option => _}
 
 class Ch4Spec extends FlatSpec with Matchers {
 
@@ -21,5 +22,26 @@ class Ch4Spec extends FlatSpec with Matchers {
     Ch4.map2(Some(4), None)(f) should be(None)
     Ch4.map2(None, Some("3"))(f) should be(None)
     Ch4.map2(None, None)(f) should be(None)
+  }
+
+  "sequence" should "just work" in {
+    val xs = Some(1)::Some(2)::None::Some(4)::Nil
+    val ys = Some(1)::Some(2)::Some(3)::Some(4)::Nil
+    Ch4.sequence(xs) should be(None)
+    Ch4.sequence(ys) should be(Some(1::2::3::4::Nil))
+  }
+
+  "traverse" should "just work" in {
+    val f: String => Option[Int] = i => Ch4.Try(i.toInt)
+
+    Ch4.traverse("1"::"2"::"3"::"4"::Nil)(f) should be(Some(1::2::3::4::Nil))
+    Ch4.traverse("1"::"2"::"blorp"::"4"::Nil)(f) should be(None)
+  }
+
+  "sequenceT" should "work same as sequence" in {
+    val xs = Some(1)::Some(2)::None::Some(4)::Nil
+    val ys = Some(1)::Some(2)::Some(3)::Some(4)::Nil
+    Ch4.sequenceT(xs) should be(None)
+    Ch4.sequenceT(ys) should be(Some(1::2::3::4::Nil))
   }
 }
