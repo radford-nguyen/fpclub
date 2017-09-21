@@ -43,7 +43,7 @@ class Ch5Spec extends FlatSpec with Matchers {
   }
 
   "Stream.takeWhile" should "only evaluate thunks once" in {
-    var count = 0;
+    var count = 0
     val expensiveZero = { println("**expensive computation**"); count+=1; 0 }
     val s = Stream.cons(expensiveZero, Stream(1, 2, 3, -5, 4))
     println("created Stream")
