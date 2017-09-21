@@ -37,4 +37,8 @@ class Ch5Spec extends FlatSpec with Matchers {
     Stream(1,3).drop(23) should be(Empty)
     Stream(1,2,3,4,5,6,7,8,9,10,11,12,13).drop(23) should be(Empty)
   }
+
+  "Stream.takeWhile" should "just work" in {
+    Stream(1,4,2,-4,0,3,5,1,5).takeWhile(a => a>0).toList should be(List(1,4,2))
+  }
 }
