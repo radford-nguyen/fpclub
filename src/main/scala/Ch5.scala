@@ -31,14 +31,8 @@ sealed trait Stream[+A] {
   // ex 5.3
   def takeWhile(p: A=>Boolean): Stream[A] = {
     this match {
-      case Empty => Empty
-      case Cons(h, t) => {
-        lazy val hd = h()
-        if (p(hd))
-          Stream.cons(hd, t().takeWhile(p))
-        else
-          Empty
-      }
+      case Cons(h, t) if (p(h())) => Stream.cons(h(), t().takeWhile(p))
+      case _ => Empty
     }
   }
 }

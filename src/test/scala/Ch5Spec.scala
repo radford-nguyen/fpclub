@@ -41,4 +41,13 @@ class Ch5Spec extends FlatSpec with Matchers {
   "Stream.takeWhile" should "just work" in {
     Stream(1,4,2,-4,0,3,5,1,5).takeWhile(a => a>0).toList should be(List(1,4,2))
   }
+
+  "Stream.takeWhile" should "only evaluate thunks once" in {
+    var count = 0;
+    val expensiveZero = { println("**expensive computation**"); count+=1; 0 }
+    val s = Stream.cons(expensiveZero, Stream(1, 2, 3, -5, 4))
+    println("created Stream")
+    s.takeWhile(_ >= 0).toList should be(List(0,1,2,3))
+    count should be(1)
+  }
 }
