@@ -97,4 +97,32 @@ object Stream {
     else
       cons(as.head, apply(as.tail: _*))
   }
+  val ones: Stream[Int] = constant(1)
+
+  // ex 5.8
+  def constant[A](a: A): Stream[A] = Stream.cons(a, constant(a))
+  // more efficient constant: an object that just references itself
+  def constant2[A](a: A): Stream[A] = {
+    lazy val tail: Stream[A] = Cons(() => a, () => tail)
+    tail
+  }
+
+  // ex 5.9
+  def from(n: Int): Stream[Int] = Stream.cons(n, from(n+1))
+
+  // ex 5.10
+  val fibs: Stream[Int] = {
+    def f(a: Int, b: Int):Stream[Int] = {
+      Stream.cons(a, f(b, b+a))
+    }
+    f(0,1)
+  }
+
+  // ex 5.11
+  def unfold[A,S](z: S)(f: S=>Option[(A,S)]): Stream[A] = {
+    f(z) match {
+      case None => Empty: Stream[A]
+      case Some((a,s)) => Stream.cons(a, unfold(s)(f))
+    }
+  }
 }

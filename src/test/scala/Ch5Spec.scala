@@ -108,4 +108,28 @@ class Ch5Spec extends FlatSpec with Matchers {
     Stream(1,2).flatMap(a => Stream(a,a)).toList should be (List(1,1,2,2))
     Stream(0,1,2).flatMap(a => if (a>0) Stream(a,a) else Empty).toList should be (List(1,1,2,2))
   }
+
+  "Stream.constant" should "just work" in {
+    Stream.constant("ja").take(4).toList should be(List("ja", "ja", "ja", "ja"))
+    Stream.constant(9).takeWhile(_<0) should be(Empty)
+  }
+
+  "Stream.from" should "just work" in {
+    Stream.from(99).take(5).toList should be(List(99,100,101,102,103))
+  }
+
+  "Stream.fibs" should "just work" in {
+    Stream.fibs.take(6).toList should be(List(0,1,1,2,3,5))
+  }
+
+  "Stream.unfold" should "just work" in {
+    def Try[A](a: =>A): Option[A] = {
+      try Some(a)
+      catch { case _: Exception => None }
+    }
+    def f(s: String): Option[(Int, String)] = {
+      Try(Integer.parseInt(s)).map(i => (i, s+"0"))
+    }
+    Stream.unfold("1")(f).take(4).toList should be(List(1,10,100,1000))
+  }
 }
