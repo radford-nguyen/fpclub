@@ -91,6 +91,13 @@ object Ch3 {
     }
   }
 
+  def lazyFoldR[A,B](as: List[A], z: B)(f: (A, =>B) => B): B = {
+    as match {
+      case Nil => z
+      case Cons(x, xs) => f(x, lazyFoldR(xs, z)(f))
+    }
+  }
+
   // ex 3.7: NO
 
   // ex 3.8: You get the original List back.  It suggests that

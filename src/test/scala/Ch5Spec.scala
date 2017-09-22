@@ -50,4 +50,42 @@ class Ch5Spec extends FlatSpec with Matchers {
     s.takeWhile(_ >= 0).toList should be(List(0,1,2,3))
     count should be(1)
   }
+
+  "Stream.forAll" should "correctly determine true" in {
+    val s = Stream(1,2,3,4,5,6,7,8)
+    s.forAll(_>0) should be(true)
+  }
+
+  "Stream.forAll" should "be able to terminate early" in {
+    var count = 0
+    val s = Stream(1,2,3,-4,5,6,7,8)
+    s.forAll(a => {count+=1; a>0}) should be(false)
+    count should be(4)
+  }
+
+  "headOption" should "return None for empty Stream" in {
+    Stream().headOption should be(None)
+  }
+
+  "headOption" should "return Some(a) for Stream(a,b,c)" in {
+    Stream(4,5,6).headOption should be(Some(4))
+  }
+
+  "headOption" should "not evaluate tail of Stream" in {
+    var count = 0;
+    val s = Stream.cons(
+      {count +=1; 1},
+      Stream.cons(
+        {count +=1; 2},
+        Stream.cons(
+          {count +=1; 3},
+          Stream.cons(
+            {count +=1; 4},
+            Empty)
+        )
+      )
+    )
+    s.headOption should be(Some(1))
+    count should be(1)
+  }
 }
