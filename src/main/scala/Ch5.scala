@@ -66,6 +66,20 @@ sealed trait Stream[+A] {
   // ex 5.5: see takeWhile above
 
   // ex 5.6: see headOption above
+
+  // ex 5.7
+  def map[B](f: A=>B): Stream[B] = {
+    foldRight(Empty:Stream[B])((a,b) => Stream.cons(f(a), b))
+  }
+  def filter(p: A=>Boolean): Stream[A] = {
+    foldRight(Empty: Stream[A])((a, b) => if (p(a)) Stream.cons(a, b) else b)
+  }
+  def append[AA>:A](s: =>Stream[AA]): Stream[AA] = {
+    foldRight(s)(Stream.cons(_,_))
+  }
+  def flatMap[B](f: A=>Stream[B]): Stream[B] = {
+    foldRight(Empty:Stream[B])((a,b) => f(a).append(b))
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: ()=>A, t: ()=>Stream[A]) extends Stream[A]

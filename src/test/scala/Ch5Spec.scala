@@ -88,4 +88,24 @@ class Ch5Spec extends FlatSpec with Matchers {
     s.headOption should be(Some(1))
     count should be(1)
   }
+
+  "Stream.map" should "just work" in {
+    Stream(1,2,3).map(_+1).toList should be(List(2,3,4))
+  }
+
+  "Stream.filter" should "just work" in {
+    Stream(1,-1,2,-2,3,-3,4,-4).filter(_>0).toList should be(List(1,2,3,4))
+  }
+
+  "Stream.append" should "just work" in {
+    Stream(1,2,3).append(Empty).toList should be(List(1,2,3))
+    Empty.append(Stream(1,2,3)).toList should be(List(1,2,3))
+    Empty.append(Empty) should be(Empty)
+    Stream(4,4).append(Stream(1,2,3,4)).toList should be(List(4,4,1,2,3,4))
+  }
+
+  "Stream.flatMap" should "just work" in {
+    Stream(1,2).flatMap(a => Stream(a,a)).toList should be (List(1,1,2,2))
+    Stream(0,1,2).flatMap(a => if (a>0) Stream(a,a) else Empty).toList should be (List(1,1,2,2))
+  }
 }
