@@ -92,6 +92,9 @@ class Ch5Spec extends FlatSpec with Matchers {
   "Stream.map" should "just work" in {
     Stream(1,2,3).map(_+1).toList should be(List(2,3,4))
   }
+  "Stream.mapAsUnfold" should "just work" in {
+    Stream(1,2,3).mapAsUnfold(_+1).toList should be(List(2,3,4))
+  }
 
   "Stream.filter" should "just work" in {
     Stream(1,-1,2,-2,3,-3,4,-4).filter(_>0).toList should be(List(1,2,3,4))

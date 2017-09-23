@@ -80,6 +80,20 @@ sealed trait Stream[+A] {
   def flatMap[B](f: A=>Stream[B]): Stream[B] = {
     foldRight(Empty:Stream[B])((a,b) => f(a).append(b))
   }
+
+  // ex 5.13
+  def mapAsUnfold[B](f: A=>B): Stream[B] = {
+    Stream.unfold(this)(s => {
+      s match {
+        case Empty => None
+        case Cons(h, t) => Some((f(h()), t()))
+      }
+    })
+  }
+  def takeAsUnfold(n: Int): Stream[A] = {
+    ???
+  }
+
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: ()=>A, t: ()=>Stream[A]) extends Stream[A]
@@ -141,4 +155,7 @@ object Stream {
   val onesAsUnfold: Stream[Int] = {
     unfold(1)(_ => Some(1,1))
   }
+
+  // ex 5.13
+
 }
