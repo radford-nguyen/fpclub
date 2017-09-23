@@ -113,13 +113,23 @@ class Ch5Spec extends FlatSpec with Matchers {
     Stream.constant("ja").take(4).toList should be(List("ja", "ja", "ja", "ja"))
     Stream.constant(9).takeWhile(_<0) should be(Empty)
   }
+  "Stream.constantAsUnfold" should "just work" in {
+    Stream.constantAsUnfold("ja").take(4).toList should be(List("ja", "ja", "ja", "ja"))
+    Stream.constantAsUnfold(9).takeWhile(_<0) should be(Empty)
+  }
 
   "Stream.from" should "just work" in {
     Stream.from(99).take(5).toList should be(List(99,100,101,102,103))
   }
+  "Stream.fromAsUnfold" should "just work" in {
+    Stream.fromAsUnfold(99).take(5).toList should be(List(99,100,101,102,103))
+  }
 
   "Stream.fibs" should "just work" in {
     Stream.fibs.take(6).toList should be(List(0,1,1,2,3,5))
+  }
+  "Stream.fibsAsUnfold" should "just work" in {
+    Stream.fibsAsUnfold.take(6).toList should be(List(0,1,1,2,3,5))
   }
 
   "Stream.unfold" should "just work" in {
