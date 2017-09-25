@@ -232,4 +232,14 @@ class Ch5Spec extends FlatSpec with Matchers {
 
     Empty.startsWith(Empty) should be(true)
   }
+
+  "Stream.tails" should "just work" in {
+    Stream(1,2,3).tails.toList.map(s => s.toList) should be(
+      List(
+        List(1,2,3),
+        List(2,3),
+        List(3)
+      )
+    )
+  }
 }

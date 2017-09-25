@@ -144,6 +144,19 @@ sealed trait Stream[+A] {
     sameElems.forAll(p => p)
   }
 
+  // ex 5.15
+  def tails: Stream[Stream[A]] = {
+    Stream.unfold(this)(s => {
+      s match {
+        case Empty => None
+        case Cons(_, t) => Some(s, t())
+      }
+    })
+  }
+
+  def hasSubsequence[A](sub: Stream[A]): Boolean = {
+    tails exists (_ startsWith sub)
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: ()=>A, t: ()=>Stream[A]) extends Stream[A]
