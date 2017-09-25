@@ -85,13 +85,45 @@ sealed trait Stream[+A] {
   def mapAsUnfold[B](f: A=>B): Stream[B] = {
     Stream.unfold(this)(s => {
       s match {
-        case Empty => None
         case Cons(h, t) => Some((f(h()), t()))
+        case _ => None
       }
     })
   }
   def takeAsUnfold(n: Int): Stream[A] = {
-    ???
+    Stream.unfold((this,n))(s => {
+      s match {
+        case (Cons(h,t), x) if x > 0 => Some((h(), (t(), x-1)))
+        case _ => None
+      }
+    })
+  }
+  def takeWhileAsUnfold(p: A=>Boolean): Stream[A] = {
+    Stream.unfold(this)(s => {
+      s match {
+        case Cons(h,t) if (p apply h()) => Some((h(), t()))
+        case _ => None
+      }
+    })
+  }
+  def zipWithAsUnfold[B,C](bs: Stream[B])(f: (A,B)=>C): Stream[C] = {
+    Stream.unfold((this, bs))(s => {
+      s match {
+        case (Empty, _) => None
+        case (_, Empty) => None
+        case (Cons(a, atail), Cons(b, btail)) => Some((f(a(), b()),(atail(),btail())))
+      }
+    })
+  }
+  def zipAll[B](bs: Stream[B]): Stream[(Option[A],Option[B])] = {
+    Stream.unfold((this, bs))(s => {
+      s match {
+        case (Cons(a, atail), Empty) => Some(( (Some(a()),None), (atail(),Empty) ))
+        case (Empty, Cons(b, btail)) => Some(( (None,Some(b())), (Empty,btail()) ))
+        case (Cons(a, atail), Cons(b, btail)) => Some(( (Some(a()),Some(b())), (atail(),btail()) ))
+        case (Empty, Empty) => None
+      }
+    })
   }
 
 }
