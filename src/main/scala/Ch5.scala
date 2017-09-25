@@ -36,15 +36,15 @@ sealed trait Stream[+A] {
   }
 
   def exists(p: A=>Boolean): Boolean = {
-//    this match {
-//      case Cons(h, t) => p(h()) || t().exists(p)
-//      case _ => false
-//    }
+    this match {
+      case Cons(h, t) => p(h()) || t().exists(p)
+      case _ => false
+    }
     // in terms of foldRight
     //
     // note that the solution in terms of foldRight
     // is not stack-safe like the original
-    foldRight(false)((a,b) => p(a) || b)
+//    foldRight(false)((a,b) => p(a) || b)
   }
 
   def foldRight[B](z: =>B)(f: (A, =>B) => B): B = this match {
@@ -126,6 +126,24 @@ sealed trait Stream[+A] {
     })
   }
 
+  // ex 5.14
+  def startsWith[A](sub: Stream[A]): Boolean = {
+    // create a (lazy) stream of bools that
+    // indicate if `as` and `bs` have the same head
+    val sameElems: Stream[Boolean] = Stream.unfold((this, sub))(s => {
+      s match {
+        case (_, Empty) => None // if the subsequence is empty, we're done
+        case (Empty, _) => Some(false, (Empty,Empty))
+        case (Cons(a, atail), Cons(b, btail)) => Some(a()==b(), (atail(),btail()))
+      }
+    })
+
+    // then, simply traverse that lazy stream
+    // until either `false` (in which case return false)
+    // or `Empty` (in which case return true)
+    sameElems.forAll(p => p)
+  }
+
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: ()=>A, t: ()=>Stream[A]) extends Stream[A]
@@ -187,7 +205,5 @@ object Stream {
   val onesAsUnfold: Stream[Int] = {
     unfold(1)(_ => Some(1,1))
   }
-
-  // ex 5.13
 
 }

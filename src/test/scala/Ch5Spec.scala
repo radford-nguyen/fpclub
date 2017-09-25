@@ -218,4 +218,18 @@ class Ch5Spec extends FlatSpec with Matchers {
       )
     )
   }
+
+  "Stream.startsWith" should "just work" in {
+    Stream(1,2,3).startsWith(Stream(1)) should be(true)
+    Stream(1,2,3).startsWith(Stream(1,2)) should be(true)
+    Stream(1,2,3).startsWith(Stream(1,2,3)) should be(true)
+
+    Stream(1,2,3).startsWith(Stream(1,4)) should be(false)
+
+    Stream(1,2,3).startsWith(Stream(1,2,3,4)) should be(false)
+
+    Stream(1,2,3).startsWith(Empty) should be(true)
+
+    Empty.startsWith(Empty) should be(true)
+  }
 }
