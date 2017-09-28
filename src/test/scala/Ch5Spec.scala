@@ -242,4 +242,15 @@ class Ch5Spec extends FlatSpec with Matchers {
       )
     )
   }
+
+  "Stream.scanRight" should "just work" in {
+    Stream(1,2,3,4).scanRight(55)(_+_).toList should be(
+      List(
+        1+2+3+4+55,
+        2+3+4+55,
+        3+4+55,
+        4+55
+      )
+    )
+  }
 }
