@@ -246,4 +246,14 @@ class Ch3Spec extends FlatSpec with Matchers {
     val f = (_+1): Int=>Int
     Ch3.mapF(tree)(f) should be(Ch3.mapF(tree)(f))
   }
+
+  "lazyFoldR" should "be able to terminate traversal early" in {
+    var count = 0;
+    var l = List(1,1,1,-1,1,1)
+    Ch3.lazyFoldR(l, 0)((a,b) => {
+      count += 1
+      if (a>0) b+1 else 0
+    }) should be(3)
+    count should be(4)
+  }
 }
