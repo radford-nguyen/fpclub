@@ -149,4 +149,31 @@ object Ch6 {
     })
   }
 
+  // ex 6.10
+  case class State[S,+A](run: S => (A,S)) {
+    def map[B](f: A=>B): State[S,B] =
+      flatMap(a => State.unit(f(a)))
+
+    def map2[B,C](rb: State[S,B])(f: (A,B)=>C): State[S,C] =
+      flatMap(a => {
+        flatMap(b => {
+          State.unit(f(a,b))
+        })
+      })
+
+    def flatMap[B](f: A=>State[S,B]): State[S,B] = State(s => {
+      val (a,r2) = run(s)
+      f(a).run(r2)
+    })
+  }
+  object State {
+    def unit[A,S](a:A): State[S,A] = State(s => (a,s))
+    def sequence[A,S](ss: List[State[S,A]]): State[S,List[A]] = {
+      def init:State[S,List[A]] = unit(Nil:List[A])
+      ss.foldRight(init)((s, stateAs) => {
+        s.map2(stateAs)((a,as) => a::as)
+      })
+    }
+  }
+
 }
