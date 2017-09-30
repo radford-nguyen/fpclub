@@ -120,4 +120,33 @@ object Ch6 {
   def ints2(count: Int): Rand[List[Int]] = {
     sequence(List.fill(count)(int))
   }
+
+  // ex 6.8
+  def flatMap[A,B](r: Rand[A])(f: A=>Rand[B]): Rand[B] = {
+    rng => {
+      val (a, r2) = r(rng)
+      f(a)(r2)
+    }
+  }
+  def nonNegativeLessThan(n: Int): Rand[Int] =
+    flatMap(nonNegativeInt) { i =>
+      val mod = i % n
+      if (i + (n-1) - mod >= 0)
+        unit(mod)
+      else
+        nonNegativeLessThan(n)
+    }
+
+  // ex 6.9
+  def mapAsFlatMap[A,B](rand: Rand[A])(f: A=>B): Rand[B] = {
+    flatMap(rand)(a => unit(f(a)))
+  }
+  def map2AsFlatMap[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A,B)=>C): Rand[C] = {
+    flatMap(ra)(a => {
+      flatMap(rb)(b => {
+        unit(f(a,b))
+      })
+    })
+  }
+
 }
