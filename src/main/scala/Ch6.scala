@@ -154,12 +154,18 @@ object Ch6 {
     def map[B](f: A=>B): State[S,B] =
       flatMap(a => State.unit(f(a)))
 
-    def map2[B,C](rb: State[S,B])(f: (A,B)=>C): State[S,C] =
+    def map2[B,C](rb: State[S,B])(f: (A,B)=>C): State[S,C] = for {
+      a <- this
+      b <- rb
+    } yield f(a,b)
+
+    def map22[B,C](rb: State[S,B])(f: (A,B)=>C): State[S,C] = {
       flatMap(a => {
-        flatMap(b => {
-          State.unit(f(a,b))
+        rb.flatMap(b => {
+          State.unit(f(a, b))
         })
       })
+    }
 
     def flatMap[B](f: A=>State[S,B]): State[S,B] = State(s => {
       val (a,r2) = run(s)
@@ -176,4 +182,119 @@ object Ch6 {
     }
   }
 
+  def get[S]: State[S,S] = {
+    State(s => (s, s))
+  }
+
+  def set[S](s:S): State[S,Unit] = {
+    State(oldState => ((),s))
+  }
+
+  def modify[S](f:S=>S): State[S,Unit] = for {
+    m <- get
+    s <- set(f(m))
+  } yield s
+
+  // ex 6.11
+  sealed trait Input
+  case object Coin extends Input
+  case object Turn extends Input
+
+  // rules of machine:
+  //
+  // + inserting coin into a locked machine will unlock it if any candy is present
+  // + turning knob on locked machine does nothing
+  // + inserting coin into an unlocked machine does nothing
+  // + turning knob on unlocked machine will dispense candy and lock machine
+  // + machine with no candy ignores all inputs
+  case class Machine(locked:Boolean, candies:Int, coins:Int)
+
+  def getCandy: State[Machine, Int] = State(m => {
+    val c = m match {
+      case Machine(_, candy, _) => candy
+    }
+    (c, m)
+  })
+
+  def getCoins: State[Machine, Int] = State(m => {
+    val c = m match {
+      case Machine(_, _, coin) => coin
+    }
+    (c, m)
+  })
+
+  def dispenseCandy: State[Machine, Unit] = modify(m => m match {
+    case Machine(b,candy,coin) => Machine(b,candy-1,coin)
+  })
+
+  def addCoin: State[Machine, Unit] = modify(m => m match {
+    case Machine(b,candy,coin) => Machine(b,candy,coin+1)
+  })
+
+  def setLocked(b:Boolean): State[Machine, Unit] = for {
+    coin <- getCoins
+    candy <- getCandy
+    _ <- set(Machine(b, candy, coin))
+  } yield ()
+
+  /**
+    * Returns an action that operates a given machine for the
+    * given input `i`
+    *
+    * @param i
+    * @return
+    */
+  def doInput(i: Input): State[Machine, (Int,Int)] = {
+    def doNothing: State[Machine, (Int,Int)] = for {
+      candy <- getCandy
+      coin <- getCoins
+    } yield (coin,candy)
+
+    def lockedMachine(input: Input): State[Machine, (Int,Int)] = input match {
+      case Turn => doNothing
+        // this doesnt check for the no-candy
+        // situation because we rely on the
+        // outer function to do the checking
+      case Coin => for {
+        _ <- addCoin
+        _ <- setLocked(false)
+        coin <- getCoins
+        candy <- getCandy
+      } yield (coin,candy)
+    }
+
+    def unlockedMachine(input: Input): State[Machine, (Int,Int)] = input match {
+      case Coin => doNothing
+      case Turn => for {
+        _ <- dispenseCandy
+        _ <- setLocked(true)
+        coin <- getCoins
+        candy <- getCandy
+      } yield (coin,candy)
+    }
+
+    for {
+      m <- get
+      r <- m match {
+          // check no-candy situation first (see above)
+        case Machine(_, candy, _) if candy <= 0 => doNothing
+        case Machine(true, _, _) => lockedMachine(i)
+        case Machine(false, _, _) => unlockedMachine(i)
+      }
+    } yield r
+  }
+
+  /**
+    * Returns an action that operates a given machine with
+    * a list of inputs, returning the final state of the
+    * machine after the inputs are exhausted.
+    *
+    * @param inputs
+    * @return
+    */
+  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = for {
+    resultList <- {
+      State.sequence(inputs.map(doInput))
+    }
+  } yield resultList.last
 }
