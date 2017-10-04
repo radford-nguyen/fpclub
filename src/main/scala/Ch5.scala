@@ -146,9 +146,11 @@ sealed trait Stream[+A] {
 
   // ex 5.15
   def tails: Stream[Stream[A]] = {
+    var end = false
     Stream.unfold(this)(s => {
       s match {
-        case Empty => None
+        case Empty if end => None
+        case Empty => end=true; Some(s, Empty)
         case Cons(_, t) => Some(s, t())
       }
     })
@@ -162,7 +164,7 @@ sealed trait Stream[+A] {
   def scanRight[B](z:B)(f: (A,B)=>B): Stream[B] = {
     foldRight(Empty:Stream[B])((a,bs) => {
       bs match {
-        case Empty => Stream(f(a,z)) // first result
+        case Empty => Stream(f(a,z), z) // first result
         case Cons(b, _) => Stream.cons(f(a,b()), bs)
       }
     })

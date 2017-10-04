@@ -238,7 +238,8 @@ class Ch5Spec extends FlatSpec with Matchers {
       List(
         List(1,2,3),
         List(2,3),
-        List(3)
+        List(3),
+        List()
       )
     )
   }
@@ -249,8 +250,12 @@ class Ch5Spec extends FlatSpec with Matchers {
         1+2+3+4+55,
         2+3+4+55,
         3+4+55,
-        4+55
+        4+55,
+        55
       )
+    )
+    Stream(1,2,3).scanRight(0)(_+_).toList should be(
+      List(6,5,3,0)
     )
   }
 }
