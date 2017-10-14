@@ -1,5 +1,7 @@
 package fpclub7
 
+import java.util.concurrent
+
 import scala.concurrent.duration.TimeUnit
 
 object Ch7 {
@@ -94,7 +96,27 @@ object Ch7 {
 
     // ex 7.6
     def parFilter[A](as: List[A])(f: A=>Boolean): Par[List[A]] = {
+      val af: A => Par[Option[A]] = asyncF( a => if (f(a)) Some(a) else None )
+      val ps: List[Par[Option[A]]] = as.map(af)
+      ps.foldRight(unit(Nil:List[A]))((pa, parList) => {
+        map2(pa, parList)((a, as) => a match {
+          case Some(_a) => _a::as
+          case _ => as
+        })
+      })
+    }
 
+    /**
+      * Counts the number of words in the given paragraphs
+      * in parallel
+      *
+      * @param paragraphs
+      * @return
+      */
+    def parCountWords(paragraphs: List[String]): Par[Int] = {
+      val wordsInStr = (s : String) => s.split("\\s+").size
+      val pars: Par[List[Int]] = parMap(paragraphs)(wordsInStr)
+      Par.map(pars)(counts => counts.foldLeft(0)(_+_))
     }
 
   }
@@ -108,7 +130,8 @@ object Ch7 {
 
 
   class ExecutorService {
-    def submit[A](a: Callable[A]): Future[A] = ???
+    val jEx: java.util.concurrent.ExecutorService = java.util.concurrent.Executors.newFixedThreadPool(10)
+    def submit[A](a: Callable[A]): Future[A] = JavaFuture(jEx.submit(() => a.call))
   }
   trait Callable[A] {
     def call: A
@@ -121,10 +144,17 @@ object Ch7 {
     def isCancelled: Boolean
   }
 
+  private case class JavaFuture[A](jF: concurrent.Future[A]) extends Future[A] {
+    override def get: A = jF.get
+    override def get(timeout: Long, unit: TimeUnit): A = jF.get(timeout, unit)
+    override def cancel(evenIfRunning: Boolean): Boolean = jF.cancel(evenIfRunning)
+    override def isDone: Boolean = jF.isDone
+    override def isCancelled: Boolean = jF.isCancelled
+  }
   private case class UnitFuture[A](get:A) extends Future[A] {
-    def get(timeout:Long, unit:TimeUnit): A = get
-    def cancel(evenIfRunning:Boolean): Boolean = false
-    def isDone: Boolean = true
-    def isCancelled: Boolean = false
+    override def get(timeout:Long, unit:TimeUnit): A = get
+    override def cancel(evenIfRunning:Boolean): Boolean = false
+    override def isDone: Boolean = true
+    override def isCancelled: Boolean = false
   }
 }
