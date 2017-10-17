@@ -119,6 +119,51 @@ object Ch7 {
       Par.map(pars)(counts => counts.foldLeft(0)(_+_))
     }
 
+    // ex 7.7
+    /**
+      * Given `map(y)(id) == y`, it is a free theorem that `map(map(y)(g))(f) == map(y)(f.g)`
+      *
+      * Lemma:
+      * ```
+      * given: map(y)(id) = y
+      *
+      * let: unit(x) = y
+      *
+      * >> map(unit(x))(id) = unit(x)
+      *
+      * let: f = id
+      *
+      * Lemma1 => map(unit(x))(f) = unit(f(x))
+      * ```
+      *
+      * Proof:
+      * ```
+      * >> map(map(y)(g))(f)
+      *
+      * let: unit(x) = y
+      *
+      * >> map(map(y)(g))(f) = map( map(unit(x))(g) )(f)                [1]
+      *                                    |
+      * apply Lemma1 to: map(unit(x))(g)   '----.
+      *                                         v
+      * >> map( map(unit(x))(g) )(f) = map( unit(g(x)) )(f)             [2]
+      *
+      * apply Lemma1 to: map(unit(g(x)))(f)
+      *
+      * >> map( unit(g(x)) )(f) = unit( f(g(x)) ) = unit( f.g(x) )      [3]
+      *
+      * let: h = f.g
+      *
+      * >> unit(h(x)) = map(unit(x))(h) = map(unit(x))(f.g)             [4]
+      *
+      * from [1]:
+      *
+      * >> map(map(unit(x))(g))(f) = map(unit(x))(f.g)
+      *
+      * QED => map(map(y))(g)(f) = map(y)(f.g)
+      * ```
+      */
+
   }
 
   /* Gives us infix syntax for `Par`. */
